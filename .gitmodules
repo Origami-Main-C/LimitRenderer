@@ -1,0 +1,17 @@
+[submodule "core/libraries/stb"]
+	path = core/libraries/stb
+	url = https://github.com/nothings/stb.git
+[submodule "core/libraries/glfw"]
+	path = core/libraries/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "core/libraries/glad"]
+	path = core/libraries/glad
+	url = https://github.com/Dav1dde/glad.git
+	branch = c
+[submodule "core/libraries/glm"]
+	path = core/libraries/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "core/libraries/imgui"]
+	path = core/libraries/imgui
+	url = https://github.com/ocornut/imgui.git
+	branch = docking

@@ -69,9 +69,7 @@ public:
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 330");
         if (guidocking) {
-            ImGuiIO &io = ImGui::GetIO();
-            (void) io;
-            io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+            ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
             LOG_Log("WINDOW", "INIT_GUI", "docking enable");
         } else {
             LOG_Log("WINDOW", "INIT_GUI", "docking unable");

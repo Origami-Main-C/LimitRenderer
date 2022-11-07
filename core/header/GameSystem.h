@@ -3,7 +3,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <windows.h>
 #include <Project_Config.h>
 #include <GameSystem/Gui.h>
 #include <GameSystem/NormalFunction.h>

@@ -15,5 +15,7 @@
 ```
 git clone --recursive https://github.com/Origami-Main-C/GameSystem.git
 cd GameSystem
-cmake .
+mkdir build
+cd build
+cmake ..
 ```

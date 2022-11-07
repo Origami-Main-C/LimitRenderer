@@ -8,7 +8,7 @@ void processInput(Window &windows) {
 
 int main() {
     //Init window
-    Window gamesystem(800, 600, "GameSystem", "../project/icon/icon.png");
+    Window gamesystem(800, 600, const_cast<char*>("GameSystem"), const_cast<char*>("../project/icon/icon.png"));
     Shader shader("../project/shader/vertex.glsl", "../project/shader/fragment.glsl");
     float vertices[] = {
             0.5f, 0.5f, 0.0f,  // top right
@@ -31,7 +31,7 @@ int main() {
     vao.Layout(0, 3, GL_FLOAT, 3 * sizeof(float), 0);
     //colors
     ImVec4 color = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-    ImVec4 rectangle_color = ImVec4(0.5f, 0.5f, 0.5f, 1.0f);;
+    ImVec4 rectangle_color = ImVec4(0.2f, 0.3f, 0.5f, 1.0f);
     while (!gamesystem.ShouldClose()) {
         processInput(gamesystem);
         glClearColor(color.x, color.y, color.z, color.w);

@@ -36,5 +36,6 @@ std::string read_file(std::string path) {
     else
     {
         LOG_Error("FILE", "NOT_SUCCESSFULLY_READ", "No such file or directory:  "+path);
+        return "";
     }
 }

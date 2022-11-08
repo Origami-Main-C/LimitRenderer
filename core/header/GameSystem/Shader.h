@@ -8,6 +8,7 @@
 #include <iostream>
 #include <GameSystem/File.h>
 #include <GameSystem/Log.h>
+#include <filesystem>
 
 class Shader {
     //Print the Error information
@@ -18,13 +19,13 @@ class Shader {
             glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
             if (!success) {
                 glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                LOG_Error("Shader", type + "_SHADER_COMPILATION_ERROR\n", infoLog);
+                LOG_Error("SHADER", type + "_SHADER_COMPILATION_ERROR\n", infoLog);
             }
         } else {
             glGetProgramiv(shader, GL_LINK_STATUS, &success);
             if (!success) {
                 glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                LOG_Error("Shader", "PROGRAM_LINKING_ERROR\n", infoLog);
+                LOG_Error("SHADER", "PROGRAM_LINKING_ERROR\n", infoLog);
             }
         }
     }
@@ -34,34 +35,8 @@ public:
 
     //Source path
     Shader(std::string vertexPath, std::string fragmentPath, std::string geometryPath = "") {
-
-        std::string vertexCode;
-        std::string fragmentCode;
-        std::ifstream vShaderFile;
-        std::ifstream fShaderFile;
-        // ensure ifstream objects can throw exceptions:
-        vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-        try {
-            // open files
-            vShaderFile.open(vertexPath);
-            fShaderFile.open(fragmentPath);
-            std::stringstream vShaderStream, fShaderStream;
-            // read file's buffer contents into streams
-            vShaderStream << vShaderFile.rdbuf();
-            fShaderStream << fShaderFile.rdbuf();
-            // close file handlers
-            vShaderFile.close();
-            fShaderFile.close();
-            // convert stream into string
-            vertexCode = vShaderStream.str();
-            fragmentCode = fShaderStream.str();
-        }
-        catch (std::ifstream::failure &e) {
-            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << e.what() << std::endl;
-        }
-        const char *vShaderCode = vertexCode.c_str();
-        const char *fShaderCode = fragmentCode.c_str();
+        const char* vShaderCode = read_file(vertexPath).c_str();
+        const char* fShaderCode = read_file(fragmentPath).c_str();
         unsigned int vertex, fragment;
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
@@ -73,7 +48,7 @@ public:
         checkCompileErrors(fragment, "FRAGMENT");
         unsigned int geometry;
         if (!geometryPath.empty()) {
-            const char *gShaderCode = read_file(geometryPath).c_str();
+            const char* gShaderCode= read_file(geometryPath).c_str();
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(geometry, 1, &gShaderCode, NULL);
             glCompileShader(geometry);

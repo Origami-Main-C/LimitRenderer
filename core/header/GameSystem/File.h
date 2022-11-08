@@ -10,12 +10,12 @@
 //read file function
 std::string read_file(std::string path) {
     std::filesystem::path FilePath(path);
+    std::ifstream file;
+    std::stringstream fileStream;
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     if(std::filesystem::exists(FilePath))
     {
         bool success=true;
-        std::ifstream file;
-        std::stringstream fileStream;
-        file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try
         {
             file.open(path);

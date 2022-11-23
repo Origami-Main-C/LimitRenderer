@@ -91,8 +91,8 @@ namespace Normal {
                 style.GrabRounding                      = 3;
                 style.LogSliderDeadzone                 = 4;
                 style.TabRounding                       = 4;
-
-        }void ModernDarkStyleDebug(bool docking_enable) {
+        }
+        void ModernDarkStyleDebug(bool docking_enable) {
 
             ImVec4* colors = ImGui::GetStyle().Colors;
             colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);

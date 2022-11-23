@@ -9,7 +9,7 @@ void processInput(Window &windows) {
 int main() {
     //Init window
     Window gamesystem(800, 600, const_cast<char*>("GameSystem"), const_cast<char*>("../project/icon/icon.png"));
-    Shader shader("../project/shader/vertexShader.glsl", "../project/shader/fragmentShader.glsl");
+    Shader shader("../project/shader/rectangleShader/vertexShader.glsl", "../project/shader/rectangleShader/fragmentShader.glsl");
     float vertices[] = {
             0.5f, 0.5f, 0.0f,  // top right
             0.5f, -0.5f, 0.0f,  // bottom right

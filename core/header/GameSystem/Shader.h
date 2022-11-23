@@ -39,6 +39,7 @@ public:
     Shader(std::string vertexPath, std::string fragmentPath, std::string geometryPath = "") {
         const char* vShaderCode = read_file(vertexPath).c_str();
         const char* fShaderCode = read_file(fragmentPath).c_str();
+        std::cout<<vShaderCode<<std::endl<<fShaderCode<<std::endl;
         unsigned int vertex, fragment;
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);

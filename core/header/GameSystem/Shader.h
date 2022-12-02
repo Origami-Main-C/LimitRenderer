@@ -37,9 +37,10 @@ public:
 
     //Source path
     Shader(std::string vertexPath, std::string fragmentPath, std::string geometryPath = "") {
-        const char* vShaderCode = read_file(vertexPath).c_str();
-        const char* fShaderCode = read_file(fragmentPath).c_str();
-        std::cout<<vShaderCode<<std::endl<<fShaderCode<<std::endl;
+        std::string vCode=read_file(vertexPath);
+        std::string fCode = read_file(fragmentPath);
+        const char* vShaderCode = vCode.c_str();
+        const char* fShaderCode = fCode.c_str();
         unsigned int vertex, fragment;
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
@@ -52,7 +53,8 @@ public:
         unsigned int geometry;
         bool geometryShaderCompileSuccess;
         if (!geometryPath.empty()) {
-            const char* gShaderCode= read_file(geometryPath).c_str();
+            std::string gCode=read_file(geometryPath);
+            const char* gShaderCode= gCode.c_str();
             geometry = glCreateShader(GL_GEOMETRY_SHADER);
             glShaderSource(geometry, 1, &gShaderCode, NULL);
             glCompileShader(geometry);

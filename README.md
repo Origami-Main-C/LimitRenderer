@@ -17,4 +17,3 @@ git clone --recursive https://github.com/Origami-Main-C/GameSystem.git
 cd GameSystem
 cmake .
 ```
-*please make sure that the .exe file is in `GameSystem/{some_directory}/`or the example project can't run correctly*

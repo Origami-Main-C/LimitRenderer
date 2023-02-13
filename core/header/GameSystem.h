@@ -5,7 +5,7 @@
 #include <iostream>
 #include <Project_Config.h>
 #include <GameSystem/Gui.h>
-#include <GameSystem/NormalFunction.h>
+#include <GameSystem/Normal.h>
 #include <GameSystem/Window.h>
 #include <GameSystem/Camera.h>
 #include <GameSystem/Shader.h>

@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <GameSystem/Gui.h>
-#include <GameSystem/NormalFunction.h>
+#include <GameSystem/Normal.h>
 #include <stb_image.h>
 #include <filesystem>
 

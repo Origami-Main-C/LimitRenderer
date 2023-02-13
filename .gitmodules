@@ -15,3 +15,6 @@
 	path = core/libraries/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "core/libraries/imgui-filebrowser"]
+	path = core/libraries/imgui-filebrowser
+	url = https://github.com/AirGuanZ/imgui-filebrowser.git

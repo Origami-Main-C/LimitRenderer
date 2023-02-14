@@ -43,7 +43,7 @@ int main() {
     float deltaTime;
     float lastFrame=0.0f;
     float angle_change=0.0f;
-    ImGui::FileBrowser fileDialog(ImGuiFileBrowserFlags_SelectDirectory);
+    ImGui::FileBrowser fileDialog;
     // (optional) set browser properties
     fileDialog.SetTitle("file browser");
     std::filesystem::path pwd("../");
@@ -89,6 +89,7 @@ int main() {
             fileDialog.ClearSelected();
             fileDialog.Close();
         }
+
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(gamesystem.window);

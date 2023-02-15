@@ -68,6 +68,45 @@ int main() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+#ifdef NO_RESIZE
+        dockspace_flags ^= ImGuiDockNodeFlags_NoResize;
+#endif
+#ifdef MENU_BAR
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+#else
+        ImGuiWindowFlags window_flags =ImGuiWindowFlags_NoDocking;
+#endif
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+            window_flags |= ImGuiWindowFlags_NoBackground;
+        ImGui::Begin("DockSpace Demo", nullptr, window_flags);
+        ImGui::PopStyleVar(2);
+        ImGuiIO& io = ImGui::GetIO();
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+#ifdef MENU_BAR
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("Options"))
+            {
+                if (ImGui::MenuItem("Close", NULL, false, true))
+                {
+
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
+        }
+#endif
+        ImGui::End();
         ImGui::Begin("Color Edit", nullptr);
         ImGui::ColorEdit3("background color", (float *) &color);
         ImGui::End();
@@ -89,7 +128,6 @@ int main() {
             fileDialog.ClearSelected();
             fileDialog.Close();
         }
-
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(gamesystem.window);

@@ -51,7 +51,7 @@ namespace Normal {
                 if(docking_enable)
                 {
                     colors[ImGuiCol_DockingPreview]         = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-                    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+                    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
                 }
                 colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
                 colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
@@ -137,7 +137,7 @@ namespace Normal {
             if(docking_enable)
             {
                 colors[ImGuiCol_DockingPreview]         = ImVec4(0.37f, 0.37f, 0.37f, 1.00f);
-                colors[ImGuiCol_DockingEmptyBg]         = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
+                colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.00f, 0.00f, 0.00f, 1.00f);
             }
             colors[ImGuiCol_PlotLines]              = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
             colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);

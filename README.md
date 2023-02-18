@@ -1,4 +1,4 @@
-# LimitRenderer
+# Limit Renderer
 *A simple model renderer based on* [*GameSystem*](https://github.com/Origami-Main-C/GameSystem)
 
 ![](https://img.shields.io/badge/Language-C%2B%2B-blue)
@@ -8,12 +8,12 @@
 
 ![](./readme/icon.png)
 
-## How to use
+## Compile
 
 - [Cmake 3.23+](https://cmake.org/download/) required
 
 ```
 git clone --recursive https://github.com/Origami-Main-C/LimitRenderer.git
-cd GameSystem
+cd LimitRenderer
 cmake .
 ```

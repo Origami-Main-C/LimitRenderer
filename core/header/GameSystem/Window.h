@@ -15,17 +15,14 @@ public:
 
     void SetIcon(const char *path) {
         std::filesystem::path iconPath(path);
-        if(std::filesystem::exists(iconPath))
-        {
+        if (std::filesystem::exists(iconPath)) {
             GLFWimage icon;
             icon.pixels = stbi_load(path, &icon.width, &icon.height, 0, 4); //rgba channels
             glfwSetWindowIcon(window, 1, &icon);
             stbi_image_free(icon.pixels);
             LOG_Log("WINDOW", "SET_ICON", path);
-        }
-        else
-        {
-            LOG_Error("WINDOW","FAILED_TO_SET_ICON","No such file or directory:    "+iconPath.string());
+        } else {
+            LOG_Error("WINDOW", "FAILED_TO_SET_ICON", "No such file or directory:    " + iconPath.string());
         }
     }
 
@@ -33,7 +30,7 @@ public:
     Window(int width, int height, std::string title, char *iconPath = nullptr,
            void (*framebuffer_size_callback)(GLFWwindow *window, int width,
                                              int height) = Normal::Function::framebuffer_size_callback,
-           void (*guiColorStyle)(bool docking_enable)  = Normal::GuiStyle::ModernDarkStyleEditor,
+           void (*guiColorStyle)(bool docking_enable) = Normal::GuiStyle::ModernDarkStyleEditor,
            bool guidocking = true) {
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

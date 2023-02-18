@@ -10,12 +10,12 @@ unsigned int loadTexture(char const *path) {
 
     return textureID;
 }
-class Texture
-{
+
+class Texture {
 public:
     unsigned int ID;
-    Texture(const char* path)
-    {
+
+    Texture(const char *path) {
         glGenTextures(1, &ID);
         int width, height, nrComponents;
         unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
@@ -41,8 +41,8 @@ public:
         }
         stbi_image_free(data);
     }
-    void Bind()
-    {
+
+    void Bind() {
         glBindTexture(GL_TEXTURE_2D, ID);
     }
 };

@@ -4,12 +4,6 @@
 #include<stb_image.h>
 #include <GameSystem/Log.h>
 
-//Load texture from path then return id
-unsigned int loadTexture(char const *path) {
-    unsigned int textureID;
-
-    return textureID;
-}
 
 class Texture {
 public:
@@ -44,5 +38,26 @@ public:
 
     void Bind() {
         glBindTexture(GL_TEXTURE_2D, ID);
+    }
+};
+
+class FrameTexture {
+public:
+    unsigned int ID;
+
+    FrameTexture() {
+        glGenTextures(1, &ID);
+    }
+
+    void Bind() {
+        glBindTexture(GL_TEXTURE_2D, ID);
+
+    }
+
+    void Data(int width, int height) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ID, 0);
     }
 };

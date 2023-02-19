@@ -36,10 +36,7 @@ int main() {
     vao.Layout(0, 3, GL_FLOAT, 8 * sizeof(float), 0);
     vao.Layout(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float));
     vao.Layout(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float));
-    glm::mat4 trans(1.0f);
     //colors
-    ImVec4 color = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-    ImVec4 rectangle_color = ImVec4(0.2f, 0.3f, 0.5f, 1.0f);
     shader.use();
     shader.setInt("texture1", 0);
     float deltaTime;
@@ -52,29 +49,39 @@ int main() {
     fileDialog.SetPwd(pwd);
     bool openFileDialog = false;
     int time = 0;
-    ImGuiIO &io=ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("../core/libraries/JetBrainsMono/fonts/ttf/JetBrainsMono-LightItalic.ttf",25.0f);
+    ImGuiIO &io = ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF("../core/libraries/JetBrainsMono/fonts/ttf/JetBrainsMono-LightItalic.ttf", 25.0f);
     ImGui::LoadIniSettingsFromDisk("../project/EditorLayout/GuiLayout.ini");
-    ImGui::GetIO().IniFilename= nullptr;
+    ImGui::GetIO().IniFilename = nullptr;
+    FBO fbo;
+    fbo.Bind();
+    // create a color attachment texture
+    FrameTexture frame;
+    frame.Bind();
+    frame.Data(2200, 1400);
+    // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
+    RBO rbo;
+    rbo.Bind();
+    rbo.Storage(2200, 1400); // use a single renderbuffer object for both a depth AND stencil buffer.
+    rbo.Attach(); // now actually attach it
+    fbo.Unbind();
     while (!LimitEditor.ShouldClose()) {
         if (time == 1)
             openFileDialog = false;
         auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        fbo.Bind();
         processInput(LimitEditor);
-        glClearColor(color.x, color.y, color.z, color.w);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         glActiveTexture(GL_TEXTURE0);
         texture.Bind();
-        trans = glm::rotate(trans, (angle_change / 180.0f) * 3.14f, glm::vec3(0.0f, 0.0f, 1.0f));
         shader.use();
-        shader.setVec4("ourColor",
-                       glm::vec4(rectangle_color.x, rectangle_color.y, rectangle_color.z, rectangle_color.w));
-        shader.setMat4("transform", trans);
         vao.Bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         vao.Unbind();
+        fbo.Unbind();
         //Gui
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -124,6 +131,11 @@ int main() {
         }
         ImGui::End();
         ImGui::Begin("Viewport", nullptr);
+        ImGui::GetWindowDrawList()->AddImage(
+                (void *) frame.ID,
+                ImVec2(ImGui::GetCursorScreenPos()),
+                ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowWidth(),
+                       ImGui::GetCursorScreenPos().y + ImGui::GetWindowHeight()), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
         ImGui::Begin("Object Editor");
         ImGui::End();

@@ -81,3 +81,70 @@ public:
         glEnableVertexAttribArray(layout);
     }
 };
+
+class FBO {
+    unsigned int ID;
+
+public:
+    FBO() {
+        glGenFramebuffers(1, &ID);
+    }
+
+    void Bind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, ID);
+    }
+
+    void Unbind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void Data(unsigned int size, const void *data, int type = GL_STATIC_DRAW) {
+        Bind();
+        glBufferData(GL_ARRAY_BUFFER, size, data, type);
+    }
+
+    ~FBO() {
+        glDeleteFramebuffers(1, &ID);
+    }
+};
+
+
+class RBO {
+    unsigned int ID;
+
+public:
+
+    RBO() {
+        glGenRenderbuffers(1, &ID);
+    }
+
+    void Bind() {
+        glBindRenderbuffer(GL_FRAMEBUFFER, ID);
+    }
+
+    void Unbind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    void Data(unsigned int size, const void *data, int type = GL_STATIC_DRAW) {
+        Bind();
+        glBufferData(GL_ARRAY_BUFFER, size, data, type);
+    }
+
+    void Storage(int width, int height) {
+
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+    }
+
+    void Attach() {
+
+        // use a single renderbuffer object for both a depth AND stencil buffer.
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
+                                  ID); // now actually attach it
+    }
+
+    ~RBO() {
+        glDeleteRenderbuffers(1, &ID);
+    }
+};
+

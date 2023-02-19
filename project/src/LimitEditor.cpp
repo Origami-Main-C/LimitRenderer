@@ -53,7 +53,7 @@ int main() {
     bool openFileDialog = false;
     int time = 0;
     ImGuiIO &io=ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("../core/libraries/JetBrainsMono/fonts/ttf/JetBrainsMono-Light.ttf",25.0f);
+    io.Fonts->AddFontFromFileTTF("../core/libraries/JetBrainsMono/fonts/ttf/JetBrainsMono-LightItalic.ttf",25.0f);
     ImGui::LoadIniSettingsFromDisk("../project/EditorLayout/GuiLayout.ini");
     ImGui::GetIO().IniFilename= nullptr;
     while (!LimitEditor.ShouldClose()) {
@@ -99,6 +99,7 @@ int main() {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Add")) {
                 if (ImGui::MenuItem("Model", nullptr, false, true)) {
+                    fileDialog.SetPwd(pwd);
                     openFileDialog = true;
                     time = 1;
 
@@ -110,6 +111,7 @@ int main() {
             }
             if (ImGui::BeginMenu("Shader")) {
                 if (ImGui::MenuItem("New", nullptr, false, true)) {
+                    fileDialog.SetPwd(pwd);
                     openFileDialog = true;
                     time = 1;
                 }

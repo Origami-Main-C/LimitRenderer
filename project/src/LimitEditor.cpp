@@ -52,6 +52,8 @@ int main() {
     fileDialog.SetPwd(pwd);
     bool openFileDialog = false;
     int time = 0;
+    ImGui::LoadIniSettingsFromDisk("../project/EditorLayout/GuiLayout.ini");
+    ImGui::GetIO().IniFilename= nullptr;
     while (!LimitEditor.ShouldClose()) {
         if (time == 1)
             openFileDialog = false;

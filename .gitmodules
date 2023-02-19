@@ -18,3 +18,6 @@
 [submodule "core/libraries/imgui-filebrowser"]
 	path = core/libraries/imgui-filebrowser
 	url = https://github.com/AirGuanZ/imgui-filebrowser.git
+[submodule "core/libraries/JetBrainsMono"]
+	path = core/libraries/JetBrainsMono
+	url = https://github.com/JetBrains/JetBrainsMono.git

@@ -52,6 +52,8 @@ int main() {
     fileDialog.SetPwd(pwd);
     bool openFileDialog = false;
     int time = 0;
+    ImGuiIO &io=ImGui::GetIO();
+    io.Fonts->AddFontFromFileTTF("../core/libraries/JetBrainsMono/fonts/ttf/JetBrainsMono-Light.ttf",25.0f);
     ImGui::LoadIniSettingsFromDisk("../project/EditorLayout/GuiLayout.ini");
     ImGui::GetIO().IniFilename= nullptr;
     while (!LimitEditor.ShouldClose()) {

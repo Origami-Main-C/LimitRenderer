@@ -5,6 +5,7 @@
 #include<backends/imgui_impl_opengl3.h>
 #include <imfilebrowser.h>
 
+//gui styles
 namespace Normal {
     namespace GuiStyle {
         void ModernDarkStyleEditor(bool docking_enable) {

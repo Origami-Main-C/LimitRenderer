@@ -9,6 +9,7 @@
 #include <stb_image.h>
 #include <filesystem>
 
+//window class
 class Window {
 public:
     GLFWwindow *window;

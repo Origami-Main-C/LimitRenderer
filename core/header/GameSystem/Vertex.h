@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glad/glad.h>
+//opengl objects classes
 
 class VBO {
     unsigned int ID;

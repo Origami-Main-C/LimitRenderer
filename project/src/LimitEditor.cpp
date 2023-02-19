@@ -36,12 +36,10 @@ int main() {
     vao.Layout(0, 3, GL_FLOAT, 8 * sizeof(float), 0);
     vao.Layout(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float));
     vao.Layout(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float));
-    //colors
     shader.use();
     shader.setInt("texture1", 0);
     float deltaTime;
     float lastFrame = 0.0f;
-    float angle_change = 0.0f;
     ImGui::FileBrowser fileDialog;
     // (optional) set browser properties
     fileDialog.SetTitle("file browser");
@@ -49,10 +47,12 @@ int main() {
     fileDialog.SetPwd(pwd);
     bool openFileDialog = false;
     int time = 0;
+    //gui font
     ImGuiIO &io = ImGui::GetIO();
     io.Fonts->AddFontFromFileTTF("../core/libraries/JetBrainsMono/fonts/ttf/JetBrainsMono-LightItalic.ttf", 25.0f);
     ImGui::LoadIniSettingsFromDisk("../project/EditorLayout/GuiLayout.ini");
     ImGui::GetIO().IniFilename = nullptr;
+    //fbo
     FBO fbo;
     fbo.Bind();
     // create a color attachment texture
@@ -75,6 +75,7 @@ int main() {
         processInput(LimitEditor);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+        //draw
         glActiveTexture(GL_TEXTURE0);
         texture.Bind();
         shader.use();
@@ -86,6 +87,7 @@ int main() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        //gui DockSpace
         static ImGuiDockNodeFlags DockSpace_flags = ImGuiDockNodeFlags_None;
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
         const ImGuiViewport *viewport = ImGui::GetMainViewport();
@@ -103,6 +105,7 @@ int main() {
         ImGui::PopStyleVar(2);
         ImGuiID DockSpace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(DockSpace_id, ImVec2(0.0f, 0.0f), DockSpace_flags);
+        //menu
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Add")) {
                 if (ImGui::MenuItem("Model", nullptr, false, true)) {
@@ -130,15 +133,19 @@ int main() {
             ImGui::EndMenuBar();
         }
         ImGui::End();
+        //viewport window
         ImGui::Begin("Viewport", nullptr);
+        //render frame
         ImGui::GetWindowDrawList()->AddImage(
                 (void *) frame.ID,
                 ImVec2(ImGui::GetCursorScreenPos()),
                 ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowWidth(),
                        ImGui::GetCursorScreenPos().y + ImGui::GetWindowHeight()), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
+        //object editor panel
         ImGui::Begin("Object Editor");
         ImGui::End();
+        //file browser
         if (openFileDialog) {
             fileDialog.Open();
         }

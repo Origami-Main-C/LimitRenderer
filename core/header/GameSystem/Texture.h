@@ -41,6 +41,7 @@ public:
     }
 };
 
+//use with fbo
 class FrameTexture {
 public:
     unsigned int ID;

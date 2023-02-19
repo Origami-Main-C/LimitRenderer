@@ -13,6 +13,7 @@ enum Camera_Movement {
     UP,
     DOWN
 };
+//normal camera class
 namespace Normal {
     const float YAW = -90.0f;
     const float PITCH = 0.0f;

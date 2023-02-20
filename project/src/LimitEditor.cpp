@@ -42,7 +42,7 @@ int main() {
     float lastFrame = 0.0f;
     ImGui::FileBrowser fileDialog;
     // (optional) set browser properties
-    fileDialog.SetTitle("file browser");
+    fileDialog.SetTitle("File browser");
     std::filesystem::path pwd("../");
     fileDialog.SetPwd(pwd);
     bool openFileDialog = false;
@@ -134,7 +134,7 @@ int main() {
         }
         ImGui::End();
         //viewport window
-        ImGui::Begin("Viewport", nullptr);
+        ImGui::Begin("Viewport");
         //render frame
         ImGui::GetWindowDrawList()->AddImage(
                 (void *) frame.ID,

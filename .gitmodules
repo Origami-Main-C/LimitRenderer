@@ -21,3 +21,6 @@
 [submodule "core/libraries/JetBrainsMono"]
 	path = core/libraries/JetBrainsMono
 	url = https://github.com/JetBrains/JetBrainsMono.git
+[submodule "core/libraries/assimp"]
+	path = core/libraries/assimp
+	url = https://github.com/assimp/assimp.git

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -12,6 +13,7 @@
 #include <GameSystem/Log.h>
 #include <GameSystem/Objects.h>
 #include <assimp/Importer.hpp>
+
 #define MAX_BONE_INFLUENCE 4
 struct Vertex {
     // position
@@ -41,8 +43,7 @@ class Mesh {
     unsigned int VBO, EBO;
 
     // initializes all the buffer objects/arrays
-    void setupMesh()
-    {
+    void setupMesh() {
         // create buffers/arrays
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
@@ -62,38 +63,38 @@ class Mesh {
         // set the vertex attribute pointers
         // vertex Positions
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
         // vertex normals
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Normal));
         // vertex texture coords
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TexCoords));
         // vertex tangent
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Tangent));
         // vertex bitangent
         glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Bitangent));
         // ids
         glEnableVertexAttribArray(5);
-        glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, m_BoneIDs));
+        glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void *) offsetof(Vertex, m_BoneIDs));
 
         // weights
         glEnableVertexAttribArray(6);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_Weights));
+        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, m_Weights));
         glBindVertexArray(0);
     }
+
 public:
     // mesh Data
-    std::vector<Vertex>       vertices;
+    std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    std::vector<RenderTexture>      textures;
+    std::vector<RenderTexture> textures;
     unsigned int VAO;
 
     // constructor
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<RenderTexture> textures)
-    {
+    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<RenderTexture> textures) {
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
@@ -103,26 +104,24 @@ public:
     }
 
     // render the mesh
-    void Draw(Shader &shader)
-    {
+    void Draw(Shader &shader) {
         // bind appropriate textures
-        unsigned int diffuseNr  = 1;
+        unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
-        unsigned int normalNr   = 1;
-        unsigned int heightNr   = 1;
-        for(unsigned int i = 0; i < textures.size(); i++)
-        {
+        unsigned int normalNr = 1;
+        unsigned int heightNr = 1;
+        for (unsigned int i = 0; i < textures.size(); i++) {
             glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
             // retrieve texture number (the N in diffuse_textureN)
             std::string number;
             std::string name = textures[i].type;
-            if(name == "texture_diffuse")
+            if (name == "texture_diffuse")
                 number = std::to_string(diffuseNr++);
-            else if(name == "texture_specular")
+            else if (name == "texture_specular")
                 number = std::to_string(specularNr++); // transfer unsigned int to string
-            else if(name == "texture_normal")
+            else if (name == "texture_normal")
                 number = std::to_string(normalNr++); // transfer unsigned int to string
-            else if(name == "texture_height")
+            else if (name == "texture_height")
                 number = std::to_string(heightNr++); // transfer unsigned int to string
 
             // now set the sampler to the correct texture unit

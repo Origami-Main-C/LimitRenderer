@@ -10,8 +10,7 @@ public:
     unsigned int ID;
 
     Texture(const char *path) {
-        if(path!= nullptr)
-        {
+        if (path != nullptr) {
             glGenTextures(1, &ID);
             int width, height, nrComponents;
             unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);

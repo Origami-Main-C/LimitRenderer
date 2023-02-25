@@ -1,4 +1,5 @@
 #include <GameSystem.h>
+
 bool mouse_right;
 Normal::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 1100.f;
@@ -6,6 +7,7 @@ float lastY = 700.f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
 void processInput(Window &windows) {
     if (glfwGetKey(windows.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(windows.window, true);
@@ -19,15 +21,13 @@ void processInput(Window &windows) {
     if (glfwGetKey(windows.window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-    if (mouse_right)
-    {
+
+void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
+    if (mouse_right) {
         float xpos = static_cast<float>(xposIn);
         float ypos = static_cast<float>(yposIn);
 
-        if (firstMouse)
-        {
+        if (firstMouse) {
             lastX = xpos;
             lastY = ypos;
             firstMouse = false;
@@ -77,21 +77,18 @@ int main() {
     rbo.Storage(2200, 1400); // use a single renderbuffer object for both a depth AND stencil buffer.
     rbo.Attach(); // now actually attach it
     fbo.Unbind();
-    float View_Width=2200;
-    float View_Height=1400;
-    while (!LimitEditor.ShouldClose()){
+    float View_Width = 2200;
+    float View_Height = 1400;
+    while (!LimitEditor.ShouldClose()) {
         if (time == 1)
             openFileDialog = false;
         auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        if(ImGui::IsMouseClicked(ImGuiMouseButton_Right))
-        {
-            mouse_right= true;
-        }
-        else
-        {
-            mouse_right= false;
+        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+            mouse_right = true;
+        } else {
+            mouse_right = false;
         }
         fbo.Bind();
         processInput(LimitEditor);
@@ -101,15 +98,17 @@ int main() {
         shader.use();
 
         // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)View_Width/ (float)View_Height, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) View_Width / (float) View_Height,
+                                                0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
 
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
+        model = glm::translate(model,
+                               glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));    // it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
         telescope_model.Draw(shader);
         fbo.Unbind();
@@ -167,8 +166,8 @@ int main() {
         ImGui::End();
         //viewport window
         ImGui::Begin("Viewport");
-        View_Width=ImGui::GetWindowWidth();
-        View_Height=ImGui::GetWindowHeight();
+        View_Width = ImGui::GetWindowWidth();
+        View_Height = ImGui::GetWindowHeight();
         //render frame
         ImGui::GetWindowDrawList()->AddImage(
                 (void *) frame.ID,

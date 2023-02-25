@@ -1,45 +1,57 @@
 #include <GameSystem.h>
-
-
+bool mouse_right;
+Normal::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = 1100.f;
+float lastY = 700.f;
+bool firstMouse = true;
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
 void processInput(Window &windows) {
-    if (glfwGetKey(windows.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        windows.SetWindowShouldClose();
+    if (glfwGetKey(windows.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(windows.window, true);
+
+    if (glfwGetKey(windows.window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.ProcessKeyboard(FORWARD, deltaTime);
+    if (glfwGetKey(windows.window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.ProcessKeyboard(BACKWARD, deltaTime);
+    if (glfwGetKey(windows.window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.ProcessKeyboard(LEFT, deltaTime);
+    if (glfwGetKey(windows.window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.ProcessKeyboard(RIGHT, deltaTime);
+}
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+    if (mouse_right)
+    {
+        float xpos = static_cast<float>(xposIn);
+        float ypos = static_cast<float>(yposIn);
+
+        if (firstMouse)
+        {
+            lastX = xpos;
+            lastY = ypos;
+            firstMouse = false;
+        }
+
+        float xoffset = xpos - lastX;
+        float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+        lastX = xpos;
+        lastY = ypos;
+
+        camera.ProcessMouseMovement(xoffset, yoffset);
     }
 }
-
 
 int main() {
     //Init window
     Window LimitEditor(2200, 1400, const_cast<char *>("Limit Editor"), const_cast<char *>("../project/icon/icon.png"));
-    Shader shader("../project/shader/rectangleShader/vertexShader.glsl",
-                  "../project/shader/rectangleShader/fragmentShader.glsl");
-    Texture texture("../project/texture/icon.png");
-    float vertices[] = {
-            // positions          // colors           // texture coords
-            0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
-            0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-            -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top left
-    };
-    unsigned int indices[] = {
-            0, 1, 3,  // first Triangle
-            1, 2, 3   // second Triangle
-    };
-    VBO vbo;
-    vbo.Data(sizeof(vertices), vertices);
-    EBO ebo;
-    ebo.Data(sizeof(indices), indices);
-    VAO vao;
-    vao.Bind();
-    vbo.Bind();
-    ebo.Bind();
-    vao.Layout(0, 3, GL_FLOAT, 8 * sizeof(float), 0);
-    vao.Layout(1, 3, GL_FLOAT, 8 * sizeof(float), 3 * sizeof(float));
-    vao.Layout(2, 2, GL_FLOAT, 8 * sizeof(float), 6 * sizeof(float));
-    shader.use();
-    shader.setInt("texture1", 0);
-    float deltaTime;
-    float lastFrame = 0.0f;
+    stbi_set_flip_vertically_on_load(true);
+    glEnable(GL_DEPTH_TEST);
+    //glfwSetCursorPosCallback(LimitEditor.window, mouse_callback);
+    Shader shader("../project/shader/model/vertex.glsl",
+                  "../project/shader/model/fragment.glsl");
+    Model telescope_model("../project/model/telescope/scene.gltf");
     ImGui::FileBrowser fileDialog;
     // (optional) set browser properties
     fileDialog.SetTitle("File browser");
@@ -65,24 +77,43 @@ int main() {
     rbo.Storage(2200, 1400); // use a single renderbuffer object for both a depth AND stencil buffer.
     rbo.Attach(); // now actually attach it
     fbo.Unbind();
-    while (!LimitEditor.ShouldClose()) {
+    float View_Width=2200;
+    float View_Height=1400;
+    while (!LimitEditor.ShouldClose()){
         if (time == 1)
             openFileDialog = false;
         auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        if(ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+        {
+            mouse_right= true;
+        }
+        else
+        {
+            mouse_right= false;
+        }
         fbo.Bind();
         processInput(LimitEditor);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //draw
-        glActiveTexture(GL_TEXTURE0);
-        texture.Bind();
         shader.use();
-        vao.Bind();
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-        vao.Unbind();
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)View_Width/ (float)View_Height, 0.1f, 100.0f);
+        glm::mat4 view = camera.GetViewMatrix();
+        shader.setMat4("projection", projection);
+        shader.setMat4("view", view);
+
+        // render the loaded model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
+        shader.setMat4("model", model);
+        telescope_model.Draw(shader);
         fbo.Unbind();
+
         //Gui
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -105,6 +136,7 @@ int main() {
         ImGui::PopStyleVar(2);
         ImGuiID DockSpace_id = ImGui::GetID("MyDockSpace");
         ImGui::DockSpace(DockSpace_id, ImVec2(0.0f, 0.0f), DockSpace_flags);
+
         //menu
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Add")) {
@@ -135,6 +167,8 @@ int main() {
         ImGui::End();
         //viewport window
         ImGui::Begin("Viewport");
+        View_Width=ImGui::GetWindowWidth();
+        View_Height=ImGui::GetWindowHeight();
         //render frame
         ImGui::GetWindowDrawList()->AddImage(
                 (void *) frame.ID,

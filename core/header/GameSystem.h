@@ -14,3 +14,5 @@
 #include <GameSystem/File.h>
 #include <GameSystem/Log.h>
 #include <GameSystem/Objects.h>
+#include <GameSystem/Mesh.h>
+#include <GameSystem/Model.h>

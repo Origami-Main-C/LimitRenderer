@@ -1,2 +1,2 @@
 #pragma once
-#define ENABLE_ALL_LOG
+#define LOG_ERROR_ONLY

@@ -22,41 +22,25 @@ void processInput(Window &windows) {
     }
 }
 
-void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
-
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
-
-    if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-
-    camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
 int main() {
     //Init window
     Window LimitEditor(2200, 1400, const_cast<char *>("Limit Editor"), const_cast<char *>("../project/icon/icon.png"));
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
-    Shader shader("../project/shader/normal/vertex.glsl",
-                  "../project/shader/normal/fragment.glsl");
-    Model backpack_model("../project/model/backpack/backpack.obj");
-    ImGui::FileBrowser fileDialog;
+
+    std::vector<Model> modelList;
+    ImGui::FileBrowser ModelFileDialog;
+    ImGui::FileBrowser ShaderFileDialog(ImGuiFileBrowserFlags_SelectDirectory);
     // (optional) set browser properties
-    fileDialog.SetTitle("File browser");
-    std::filesystem::path pwd("../");
-    fileDialog.SetPwd(pwd);
-    bool openFileDialog = false;
-    int time = 0;
+    ShaderFileDialog.SetTitle("Select shader dir");
+    ShaderFileDialog.SetPwd(std::filesystem::path("../project/shader"));
+
+    ModelFileDialog.SetTitle("Load model");
+    ModelFileDialog.SetPwd(std::filesystem::path("../project/model"));
+
+
+    bool openModelFileDialog = false;
+    bool openShaderFileDialog = false;
     //gui font
     ImGuiIO &io = ImGui::GetIO();
     io.Fonts->AddFontFromFileTTF("../core/libraries/JetBrainsMono/fonts/ttf/JetBrainsMono-LightItalic.ttf", 25.0f);
@@ -82,26 +66,56 @@ int main() {
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
     // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        LOG_Error("FRAMEBUFFER","FRAMEBUFFER_IS_NOT_COMPLETE","");
-        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+        LOG_Error("FRAMEBUFFER","FRAMEBUFFER_GENERATE_ERROR","Framebuffer is not complete!");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     float View_Width = 2200;
     float View_Height = 1400;
+    std::string vShader="../project/shader/model/vertex.glsl";
+    std::string fShader="../project/shader/model/fragment.glsl";
     while (!LimitEditor.ShouldClose()) {
-        if (time == 1)
-            openFileDialog = false;
+
+        Shader shader(vShader,
+                      fShader);
+        openModelFileDialog=false;
+        openShaderFileDialog=false;
         auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         processInput(LimitEditor);
+        if(focus_on_viewport)
+        {
+            if(ImGui::IsMouseDown(ImGuiMouseButton_Right))
+            {
+                float xpos = static_cast<float>(ImGui::GetMousePos().x);
+                float ypos = static_cast<float>(ImGui::GetMousePos().y);
+
+                if (firstMouse) {
+                    lastX = xpos;
+                    lastY = ypos;
+                    firstMouse = false;
+                }
+
+                float xoffset = xpos - lastX;
+                float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+                lastX = xpos;
+                lastY = ypos;
+
+                camera.ProcessMouseMovement(xoffset, yoffset);
+            }
+            else
+            {
+                firstMouse= true;
+            }
+
+        }
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glBindRenderbuffer(GL_RENDERBUFFER, rbo);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //draw
         shader.use();
-
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) View_Width / (float) View_Height,
                                                 0.1f, 100.0f);
@@ -115,7 +129,10 @@ int main() {
                                glm::vec3(0.0f, 0.0f, -1.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));    // it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
-        backpack_model.Draw(shader);
+        for (int i = 0; i < modelList.size(); ++i) {
+            modelList[i].Draw(shader);
+        }
+        //backpack_model.Draw(shader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         //Gui
         ImGui_ImplOpenGL3_NewFrame();
@@ -144,9 +161,8 @@ int main() {
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("Add")) {
                 if (ImGui::MenuItem("Model", nullptr, false, true)) {
-                    fileDialog.SetPwd(pwd);
-                    openFileDialog = true;
-                    time = 1;
+                    ModelFileDialog.SetPwd(std::filesystem::path("../project/model"));
+                    openModelFileDialog = true;
 
                 }
                 if (ImGui::MenuItem("Light", nullptr, false, true)) {
@@ -155,17 +171,10 @@ int main() {
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Shader")) {
-                if (ImGui::MenuItem("New", nullptr, false, true)) {
-                    fileDialog.SetPwd(pwd);
-                    openFileDialog = true;
-                    time = 1;
-                }
-                if (ImGui::MenuItem("Set Default", nullptr, false, true)) {
-
-                }
+                ShaderFileDialog.SetPwd(std::filesystem::path("../project/shader"));
+                openShaderFileDialog = true;
                 ImGui::EndMenu();
             }
-            ImGui::EndMenuBar();
         }
         ImGui::End();
         //viewport window
@@ -184,15 +193,26 @@ int main() {
         ImGui::Begin("Object Editor");
         ImGui::End();
         //file browser
-        if (openFileDialog) {
-            fileDialog.Open();
+        if (openShaderFileDialog) {
+            ShaderFileDialog.Open();
         }
-        fileDialog.Display();
-        if (fileDialog.HasSelected()) {
-            std::cout << "Selected filename" << fileDialog.GetSelected().string() << std::endl;
-            fileDialog.ClearSelected();
-            fileDialog.Close();
+        if (openModelFileDialog) {
+            ModelFileDialog.Open();
         }
+        ShaderFileDialog.Display();
+        ModelFileDialog.Display();
+        if (ModelFileDialog.HasSelected()) {
+
+            modelList.push_back(Model(ModelFileDialog.GetSelected().string()));
+            ModelFileDialog.ClearSelected();
+            ModelFileDialog.Close();
+        }if (ShaderFileDialog.HasSelected()) {
+            vShader=ShaderFileDialog.GetSelected().string()+"/vertex.glsl";
+            fShader=ShaderFileDialog.GetSelected().string()+"/fragment.glsl";
+            ShaderFileDialog.ClearSelected();
+            ShaderFileDialog.Close();
+        }
+
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(LimitEditor.window);

@@ -36,7 +36,7 @@ unsigned int TextureFromFile(const char *path, const std::string &directory, boo
 
         stbi_image_free(data);
     } else {
-        LOG_Error("TEXTURE", "FAILED_TO_LOAD", path);
+        LOG_Error("TEXTURE", "FAILED_TO_LOAD", filename);
         stbi_image_free(data);
     }
 
@@ -57,7 +57,7 @@ class Model {
             return;
         }
         // retrieve the directory path of the filepath
-        directory = path.substr(0, path.find_last_of('/'));
+        directory = path.substr(0, path.find_last_of("\\"));
 
         // process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);

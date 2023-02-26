@@ -140,8 +140,7 @@ public:
     void Attach() {
 
         // use a single renderbuffer object for both a depth AND stencil buffer.
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-                                  ID); // now actually attach it
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,ID); // now actually attach it
     }
 
     ~RBO() {

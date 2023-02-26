@@ -1,46 +1,45 @@
 #include <GameSystem.h>
-
-bool mouse_right;
 Normal::Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 1100.f;
 float lastY = 700.f;
 bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
+bool focus_on_viewport=true;
 void processInput(Window &windows) {
     if (glfwGetKey(windows.window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(windows.window, true);
-
-    if (glfwGetKey(windows.window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(windows.window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(windows.window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(windows.window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+    if(focus_on_viewport)
+    {
+        if (glfwGetKey(windows.window, GLFW_KEY_W) == GLFW_PRESS)
+            camera.ProcessKeyboard(FORWARD, deltaTime);
+        if (glfwGetKey(windows.window, GLFW_KEY_S) == GLFW_PRESS)
+            camera.ProcessKeyboard(BACKWARD, deltaTime);
+        if (glfwGetKey(windows.window, GLFW_KEY_A) == GLFW_PRESS)
+            camera.ProcessKeyboard(LEFT, deltaTime);
+        if (glfwGetKey(windows.window, GLFW_KEY_D) == GLFW_PRESS)
+            camera.ProcessKeyboard(RIGHT, deltaTime);
+    }
 }
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn) {
-    if (mouse_right) {
-        float xpos = static_cast<float>(xposIn);
-        float ypos = static_cast<float>(yposIn);
 
-        if (firstMouse) {
-            lastX = xpos;
-            lastY = ypos;
-            firstMouse = false;
-        }
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
 
-        float xoffset = xpos - lastX;
-        float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
+    if (firstMouse) {
         lastX = xpos;
         lastY = ypos;
-
-        camera.ProcessMouseMovement(xoffset, yoffset);
+        firstMouse = false;
     }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+
+    lastX = xpos;
+    lastY = ypos;
+
+    camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 int main() {
@@ -48,10 +47,9 @@ int main() {
     Window LimitEditor(2200, 1400, const_cast<char *>("Limit Editor"), const_cast<char *>("../project/icon/icon.png"));
     stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
-    //glfwSetCursorPosCallback(LimitEditor.window, mouse_callback);
-    Shader shader("../project/shader/model/vertex.glsl",
-                  "../project/shader/model/fragment.glsl");
-    Model telescope_model("../project/model/telescope/scene.gltf");
+    Shader shader("../project/shader/normal/vertex.glsl",
+                  "../project/shader/normal/fragment.glsl");
+    Model backpack_model("../project/model/backpack/backpack.obj");
     ImGui::FileBrowser fileDialog;
     // (optional) set browser properties
     fileDialog.SetTitle("File browser");
@@ -65,18 +63,29 @@ int main() {
     ImGui::LoadIniSettingsFromDisk("../project/EditorLayout/GuiLayout.ini");
     ImGui::GetIO().IniFilename = nullptr;
     //fbo
-    FBO fbo;
-    fbo.Bind();
+    unsigned int framebuffer;
+    glGenFramebuffers(1, &framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     // create a color attachment texture
-    FrameTexture frame;
-    frame.Bind();
-    frame.Data(2200, 1400);
+    unsigned int textureColorbuffer;
+    glGenTextures(1, &textureColorbuffer);
+    glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2200, 1400, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
     // create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
-    RBO rbo;
-    rbo.Bind();
-    rbo.Storage(2200, 1400); // use a single renderbuffer object for both a depth AND stencil buffer.
-    rbo.Attach(); // now actually attach it
-    fbo.Unbind();
+    unsigned int rbo;
+    glGenRenderbuffers(1, &rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 2200, 1400); // use a single renderbuffer object for both a depth AND stencil buffer.
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // now actually attach it
+    // now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        LOG_Error("FRAMEBUFFER","FRAMEBUFFER_IS_NOT_COMPLETE","");
+        std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
     float View_Width = 2200;
     float View_Height = 1400;
     while (!LimitEditor.ShouldClose()) {
@@ -85,13 +94,9 @@ int main() {
         auto currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-            mouse_right = true;
-        } else {
-            mouse_right = false;
-        }
-        fbo.Bind();
         processInput(LimitEditor);
+        glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, rbo);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //draw
@@ -107,12 +112,11 @@ int main() {
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model,
-                               glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+                               glm::vec3(0.0f, 0.0f, -1.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));    // it's a bit too big for our scene, so scale it down
         shader.setMat4("model", model);
-        telescope_model.Draw(shader);
-        fbo.Unbind();
-
+        backpack_model.Draw(shader);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         //Gui
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -168,9 +172,10 @@ int main() {
         ImGui::Begin("Viewport");
         View_Width = ImGui::GetWindowWidth();
         View_Height = ImGui::GetWindowHeight();
+        focus_on_viewport=ImGui::IsWindowFocused();
         //render frame
         ImGui::GetWindowDrawList()->AddImage(
-                (void *) frame.ID,
+                (void *) textureColorbuffer,
                 ImVec2(ImGui::GetCursorScreenPos()),
                 ImVec2(ImGui::GetCursorScreenPos().x + ImGui::GetWindowWidth(),
                        ImGui::GetCursorScreenPos().y + ImGui::GetWindowHeight()), ImVec2(0, 1), ImVec2(1, 0));

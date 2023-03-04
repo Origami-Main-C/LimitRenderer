@@ -125,8 +125,11 @@ int main() {
         //draw
         shader.use();
         // view/projection transformations
+
+
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float) View_Width / (float) View_Height,
-                                                0.1f, 100.0f);
+                                                    0.1f, 100.0f);
+
         glm::mat4 view = camera.GetViewMatrix();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
@@ -212,21 +215,28 @@ int main() {
                 cur_object++;
             float Translate_vec4[4] = {modelsData[cur_object].translate.x, modelsData[cur_object].translate.y,
                                        modelsData[cur_object].translate.z, 0.0f};
-            ImGui::InputFloat3("Translate", Translate_vec4);
+            ImGui::Text("Translate");
+            ImGui::SameLine();
+            ImGui::InputFloat3("##Translate", Translate_vec4);
             modelsData[cur_object].translate.x = Translate_vec4[0];
             modelsData[cur_object].translate.y = Translate_vec4[1];
             modelsData[cur_object].translate.z = Translate_vec4[2];
             ImGui::NewLine();
+            ImGui::Text("Scale");
+            ImGui::SameLine();
             float Scale_vec4[4] = {modelsData[cur_object].scale.x, modelsData[cur_object].scale.y,
                                    modelsData[cur_object].scale.z, 0.0f};
-            ImGui::InputFloat3("Scale", Scale_vec4);
+            ImGui::InputFloat3("##Scale", Scale_vec4);
             modelsData[cur_object].scale.x = Scale_vec4[0];
             modelsData[cur_object].scale.y = Scale_vec4[1];
             modelsData[cur_object].scale.z = Scale_vec4[2];
             ImGui::NewLine();
+            ImGui::Text("Rotate");
+            ImGui::SameLine();
             float Rotate_vec4[4] = {modelsData[cur_object].rotate.x, modelsData[cur_object].rotate.y,
                                     modelsData[cur_object].rotate.z, 0.0f};
-            ImGui::InputFloat3("Rotate", Rotate_vec4);
+            ImGui::SliderAngle("##RotateX",&Rotate_vec4[0],-180.0f,180.0f);
+            ImGui::InputFloat3("##Rotate", Rotate_vec4);
             modelsData[cur_object].rotate.x = Rotate_vec4[0];
             modelsData[cur_object].rotate.y = Rotate_vec4[1];
             modelsData[cur_object].rotate.z = Rotate_vec4[2];

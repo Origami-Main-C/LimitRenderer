@@ -254,7 +254,6 @@ int main() {
       float Rotate_vec4[4] = {modelsData[cur_object].rotate.x,
                               modelsData[cur_object].rotate.y,
                               modelsData[cur_object].rotate.z, 0.0f};
-      ImGui::SliderAngle("##RotateX", &Rotate_vec4[0], -180.0f, 180.0f);
       ImGui::InputFloat3("##Rotate", Rotate_vec4);
       modelsData[cur_object].rotate.x = Rotate_vec4[0];
       modelsData[cur_object].rotate.y = Rotate_vec4[1];

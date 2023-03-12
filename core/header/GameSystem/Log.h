@@ -16,59 +16,59 @@
 #endif
 
 void SetConsoleColor(int color) {
-  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
 namespace Log {
-void Log(std::string from, std::string type, std::string info) {
-  SetConsoleColor(2);
-  std::cout << "Log";
-  SetConsoleColor(7);
-  std::cout << "::";
-  SetConsoleColor(5);
-  std::cout << from;
-  SetConsoleColor(7);
-  std::cout << "::";
-  SetConsoleColor(2);
-  std::cout << type;
-  SetConsoleColor(7);
-  if (!info.empty()) {
-    std::cout << ":  " << info;
-  }
-  std::cout << std::endl;
-}
+    void Log(std::string from, std::string type, std::string info) {
+        SetConsoleColor(2);
+        std::cout << "Log";
+        SetConsoleColor(7);
+        std::cout << "::";
+        SetConsoleColor(5);
+        std::cout << from;
+        SetConsoleColor(7);
+        std::cout << "::";
+        SetConsoleColor(2);
+        std::cout << type;
+        SetConsoleColor(7);
+        if (!info.empty()) {
+            std::cout << ":  " << info;
+        }
+        std::cout << std::endl;
+    }
 
-void Error(std::string from, std::string type, std::string info) {
-  SetConsoleColor(4);
-  std::cout << "Error";
-  SetConsoleColor(7);
-  std::cout << "::";
-  SetConsoleColor(5);
-  std::cout << from;
-  SetConsoleColor(7);
-  std::cout << "::";
-  SetConsoleColor(4);
-  std::cout << type;
-  SetConsoleColor(7);
-  { std::cout << ":  " << info; }
-  std::cout << std::endl;
-}
+    void Error(std::string from, std::string type, std::string info) {
+        SetConsoleColor(4);
+        std::cout << "Error";
+        SetConsoleColor(7);
+        std::cout << "::";
+        SetConsoleColor(5);
+        std::cout << from;
+        SetConsoleColor(7);
+        std::cout << "::";
+        SetConsoleColor(4);
+        std::cout << type;
+        SetConsoleColor(7);
+        { std::cout << ":  " << info; }
+        std::cout << std::endl;
+    }
 
-void Warning(std::string from, std::string type, std::string info) {
-  SetConsoleColor(6);
-  std::cout << "Warning";
-  SetConsoleColor(7);
-  std::cout << "::";
-  SetConsoleColor(5);
-  std::cout << from;
-  SetConsoleColor(7);
-  std::cout << "::";
-  SetConsoleColor(6);
-  std::cout << type;
-  SetConsoleColor(7);
-  if (!info.empty()) {
-    std::cout << ":  " << info;
-  }
-  std::cout << std::endl;
-}
+    void Warning(std::string from, std::string type, std::string info) {
+        SetConsoleColor(6);
+        std::cout << "Warning";
+        SetConsoleColor(7);
+        std::cout << "::";
+        SetConsoleColor(5);
+        std::cout << from;
+        SetConsoleColor(7);
+        std::cout << "::";
+        SetConsoleColor(6);
+        std::cout << type;
+        SetConsoleColor(7);
+        if (!info.empty()) {
+            std::cout << ":  " << info;
+        }
+        std::cout << std::endl;
+    }
 } // namespace Log

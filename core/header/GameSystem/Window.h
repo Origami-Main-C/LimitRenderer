@@ -86,6 +86,6 @@ public:
         ImGui::DestroyContext();
         glfwDestroyWindow(window);
         glfwTerminate();
-        exit(0);
+        //exit(0);
     }
 };

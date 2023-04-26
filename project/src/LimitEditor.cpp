@@ -290,4 +290,5 @@ int main() {
         glfwSwapBuffers(LimitEditor.window);
         glfwPollEvents();
     }
+    return 0;
 }
